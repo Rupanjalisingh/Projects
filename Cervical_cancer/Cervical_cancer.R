@@ -46,12 +46,6 @@ dev.off()
 #=====================#
 #   PCA Plot
 #=====================#
-install.packages("factoextra")
-install.packages("tidyverse")
-library(tidyverse)
-library(factoextra)
-library(limma)
-
 
 data <- read.csv("ExpSet_PostNorm.csv")
 nrow(data)  # Check the number of rows in your data
@@ -161,10 +155,6 @@ write.csv(deg_anno, "DEGs_Annotated.csv", quote = F, row.names = F)
 #================================================#
 # DEG Viz (Volcano plot)
 #================================================#
-install.packages("gdata")
-install.packages("gplots")
-library(gdata)
-library(gplots)
 
 DEGs <- read.csv("Result_Table_logFCsorted.csv", h=T)
 head(DEGs)
