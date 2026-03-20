@@ -292,11 +292,3 @@ This project successfully implemented:
 
 The classical Eigenfaces method efficiently reduces dimensionality and enables effective face recognition.
 
-* ✅ Modify your code to strictly match mathematical steps
-* ✅ Provide pure NumPy implementation (no sklearn PCA)
-* ✅ Add 60–40 split exactly
-* ✅ Add k variation loop + graph
-* ✅ Add imposter threshold implementation
-
-Tell me which level of strictness your examiner expects 👌
-
