@@ -249,8 +249,6 @@ dev.off()
 #take only DEGs and its expression values in another csv file name it as Short_table for ML analysis
 #move this file to a new folder inside this called ML_Analysis
 
-setwd("C:/Users/gayat/Downloads/GSE63514_RAW/Cervical_Cancer_data/ML_Analysis")
-
 # Load the required packages
 # Importing required libraries
 #======================#
