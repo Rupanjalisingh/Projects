@@ -92,7 +92,7 @@ Since mn is large (e.g., 90,000), computation is infeasible.
 
 ---
 
-## Step 5: Surrogate Covariance (Turk & Pentland)
+## Step 5: Surrogate Covariance 
 
 Instead compute:
 
