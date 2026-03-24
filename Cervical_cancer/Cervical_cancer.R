@@ -266,28 +266,7 @@ head(df)
   str(df)
   
   dim(df)
-  
-  
-  # remove rows that contain NA values
-  df <- df[complete.cases(df), ]
-  head(df)
-  dim(df)
-  
-  
-  #Calculate Mean of duplicate genes
-  x <- df
-  x <- data.frame(x)
-  x <- do.call(rbind,lapply(lapply(split(x,x$DEGs),`[`,2:ncol(x)),colMeans))
-  dim(x)
-  
-  #Convert rownames as a 1st column with header Symbols -> which became rownames after previous operation
-  library(tibble) # from tidyverse
-  x <- data.frame(x)
-  x <- tibble::rownames_to_column(x, var="Symbols")
-  head(x)
-  dim(x) 
-  
-  df <- x
+
   
   # Transpose table 
   install.packages("sjmisc")
@@ -359,11 +338,6 @@ plot(y, col="blue")
 # Step 2. Data Splitting
 #======================#
 # create 60%/40% for training and testing dataset
-library(caret)
-set.seed(101)
-split <- createDataPartition(df$Symbols, p=0.60, list=FALSE)  # Return the row indices as a matrix/vector, not as a list.
-train <- df[split,]
-test <- df[-split,]
 
 # dimensions of dataset, train, test
 dim(df)
@@ -372,10 +346,7 @@ dim(test)
 
 
 #set cross-validation control for training
-control <- trainControl(method="cv", number=10)
-metric <- "Accuracy"
 
-head(df_t)
 
 
 #=========================#
@@ -393,17 +364,7 @@ library("caret")
 
 # 1... kNN(k-Nearest Neighbor) - [Model 1]
 #-------------------------------------------
-set.seed(7)
-fit.knn <- train(Symbols~., 
-                 data=train, 
-                 method="knn", 
-                 metric=metric, 
-                 trControl=control)
-fit.knn
-
-
-install.packages("cowplot")     # Only once
-library(cowplot)                # Load every time you use plot_grid()
+     # Load every time you use plot_grid()
 
 # check important variables
 varImp(fit.knn)
