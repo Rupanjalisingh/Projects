@@ -3,36 +3,21 @@ targets <- readTargets("target.txt")
 targets
 
 #Read CEL Files
-data <- ReadAffy(filenames = targets$FileName)
-data
+
 
 #=====================#
 # RMA Normalization
 #=====================#
-eset <- rma(data)
-normset <- exprs(eset)
-
-write.csv(normset, "ExpSet_PostNorm.csv", quote = F)
 
 
 #=====================#
 #   Box Plot
 #=====================#
-par(mfrow=c(1,2))
 
 #Boxplot Before Normalization
-tiff(file="Boxplot_Pre-Normalization.tiff", bg="transparent", width=400, height=500)
-par(mar = c(12, 4, 6, 2) + 0.1); # This sets the plot margins
-boxplot(data,col="red", main="Boxplot Pre-Normalization", las=2, cex.axis=0.74, ylab="Intensities" )
-title(xlab = "Sample Array", line = 8); # Add x axis title
-dev.off()
 
 #Boxplot After Normalization
-tiff(file="Boxplot_Post-Normalization.tiff", bg="transparent", width=400, height=500)
-par(mar = c(12, 4, 6, 2) + 0.1); # This sets the plot margins
-boxplot(normset,col="blue", main="Boxplot Post-Normalization", las=2, cex.axis=0.74, ylab="Intensities") #, col=colors 
-title(xlab = "Sample Array", line = 8); # Add x axis title
-dev.off()
+
 
 
 #-----------------------#
@@ -53,7 +38,7 @@ length(c(rep("Normal", 10), rep("Cervical_cancer", 10)))  # Check the length of 
 
 
 # Adjust Group Labels
-data_t <- t(data[,-1 ])  # Exclude the first col (gene names) during transpose
+  # Exclude the first col (gene names) during transpose
 data_t <- as.data.frame(data_t)
 data_t$Group <- c(rep("Normal", 10), rep("Cervical_cancer", 10))
 data_t$Group
@@ -67,19 +52,11 @@ library(factoextra)
 
 
 # Save PCA plot as high-resolution TIFF
-tiff("pca.tiff", width = 2000, height = 2000, res = 300)
 
 # Generate PCA plot
-fviz_pca_ind(pca_res,
-             geom.ind = c("point", "text"),
-             col.ind = data_t$Group,
-             palette = c("red", "blue"),
-             addEllipses = TRUE,
-             ellipse.type = "confidence",
-             legend.title = "Group",
-             labelsize = 2  # increased label size for better clarity
-)
-dev.off()
+
+               # increased label size for better clarity
+
 
 #=======================#
 # DEGs Identification
@@ -114,15 +91,12 @@ fit2
 # Result Top Table
 topTable(fit2, coef = 2, adjust.method = "BH") 
 
-DEGs <- topTable(fit2, coef=2, adjust="BH", sort.by="logFC", number=100000); #inf
-DEGs
-write.csv(DEGs, "Result_Table_logFCsorted.csv", quote = F, row.names = TRUE)
+
 
 #==================================================#
 # Filter & Save final DEGs based on Pvalue & logFC
 #==================================================#
 # Read data of topTable
-DEGs <- read.csv("Result_Table_logFCsorted.csv", header = TRUE)
 
 # Filter & Save DEGs
 final_DEGs <- DEGs[DEGs$P.Value < 0.05 & (DEGs$logFC > 2 | DEGs$logFC < -2), ]
@@ -182,11 +156,7 @@ head(probes)
 Symbols = unlist(mget(probes, hgu133plus2SYMBOL, ifnotfound=NA))
 
 # Combine gene annotations with raw data
-normset_anno = cbind(probes,Symbols,normset)
-write.csv(normset_anno, "ExpSet_PostNorm_Annotated.csv", quote = F, row.names = F)
 
-setwd("~/Documents/R_projects/GSE63514_RAW/Cervical_Cancer_data")
-getwd()
 #open DEGs_annotated file and ExpSet_PostNorm_annotated file.
 #In exp_postnorm annotated file, probe id will be repeated, son delete any one probe id and rename empty column as Genes
 #A heatmap can effectively show upto 50- 70 genes, hence we need to consider only highly upregulated or highly downregulated genes.
@@ -269,16 +239,7 @@ head(df)
 
   
   # Transpose table 
-  install.packages("sjmisc")
-  library(sjmisc)  
-  df_t <- rotate_df(df, cn=T)
-  Symbols <- colnames(df[-1])
-  df_t <- cbind(Symbols, df_t)
-  write.csv(df_t, "transposed_table.csv", row.names=F)
   
-  df_t <- read.csv("transposed_table.csv", h=T)
-  dim(df_t)
-  df_t[1]
   
   # Healthy_1.CEL to N/T
   #df_t[,1] <- gsub("_.*$", "", df_t[,1])#if the files are present like normal_1-s1.CEL
@@ -307,26 +268,17 @@ head(df)
 }
 
 # view transformed data
-str(df)
-df <- data.frame(df)
-head(df)
+
 
 #===============================================#
 # Step 3.  Visualize Dataset - Figures - Plots 
 #===============================================#
 #####  Box and Whisker Plots  ##### 
 # Given that the input variables are numeric, we can create box and whisker plots of each
-png("box_and_whisker_plots.png")
-par(mfrow=c(2,4))
-for(i in 2:9) {
-  boxplot(x[,i], main=names(df)[i], col="blue")
-}
-dev.off()
 
 
 #####  Sample matrix  ##### 
-library(ggplot2)
-library(caret) 
+ 
 # split input and output
 x <- df[,2:ncol(df)]  # x -  inputs attributes
 y <- df[,1]     # y -  outputs attributes
@@ -382,13 +334,7 @@ c1 <- confusionMatrix(pred.knn, test$Symbols, positive = "Cancer")$table
 #========================#
 # plot Confusion Matrix
 #========================#
-library(ggplot2)
-library(dplyr)
-table <- data.frame(c1)
-plotTable <- table %>%
-  mutate(goodbad = ifelse(table$Prediction == table$Reference, "high", "low")) %>%
-  group_by(Reference) %>%
-  mutate(prop = Freq/sum(Freq))
+
 
 # fill alpha relative to sensitivity/specificity by proportional outcomes within reference groups (see dplyr code above as well as original confusion matrix for comparison)
 ggplot(data = plotTable, mapping = aes(x = Reference, y = Prediction, fill = goodbad, alpha = Freq)) + # alpha = prop)) +
@@ -452,16 +398,7 @@ ggplot(data = plotTable, mapping = aes(x = Reference, y = Prediction, fill = goo
 
 # 3 .Random Forest Model - [Model 3]
 #----------------------------------------
-install.packages("randomForest")
-library(randomForest)
 
-set.seed(123)
-fit.rf <- train(Symbols~.,
-                data=train,
-                method="rf",
-                metric=metric,
-                trControl=control)
-fit.rf
 
 # view important genes
 varImp(fit.rf)
@@ -503,16 +440,6 @@ ggplot(data = plotTable, mapping = aes(x = Reference, y = Prediction, fill = goo
 
 
 #generating models comaprision plot
-acc_knn <- confusionMatrix(pred.knn, test$Symbols)$overall["Accuracy"]
-acc_rf  <- confusionMatrix(pred.rf, test$Symbols)$overall["Accuracy"]
-acc_svm <- confusionMatrix(pred.svm, test$Symbols)$overall["Accuracy"]
-
-library(ggplot2)
-
-accuracy_df <- data.frame(
-  Model = c("kNN", "Random Forest", "SVM"),
-  Accuracy = c(acc_knn, acc_rf, acc_svm)  # ✅ properly closed
-)
 
 p <- ggplot(accuracy_df, aes(x = Model, y = Accuracy, fill = Model)) +
   geom_bar(stat = "identity", width = 0.6) +
